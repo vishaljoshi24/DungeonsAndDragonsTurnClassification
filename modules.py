@@ -65,7 +65,7 @@ class PromptTool:
         classifier: ClassifyTurns | None = None,
     ):
         self.prompts = self._load_prompts(prompts_path)
-        self.classify = classifier or ClassifyTurns()
+        self.classify = ClassifyTurns()
 
     @staticmethod
     def _load_prompts(prompts_path: str | Path) -> dict[str, str]:
@@ -136,19 +136,16 @@ class BaselineChatbot(dspy.Module):
         )
 
 class InstructedChatbot(dspy.Module):
-    """A ReAct D&D player agent with classifier-assisted behaviour instructions."""
+    """A ReAct D&D player agent which uses tools to update its prompt instructions."""
 
     def __init__(self, prompt_tool: PromptTool | None = None, max_iters: int = 6):
         super().__init__()
-        self.prompt_tools = prompt_tool or PromptTool()
-        self.tools = [
-            self.prompt_tools.classify_input,
-            self.prompt_tools.search_prompts,
-            self.prompt_tools.update_prompt,
-        ]
+        self.prompt_tools = PromptTool()
         self.react = dspy.ReAct(
             signature=ChatbotSignature,
-            tools=self.tools,
+            tools=[self.prompt_tools.classify_input,
+                  self.prompt_tools.search_prompts,
+                  self.prompt_tools.update_prompt],
             max_iters=max_iters,
         )
 
