@@ -141,13 +141,14 @@ class InstructedChatbot(dspy.Module):
     def __init__(self, prompt_tool: PromptTool | None = None, max_iters: int = 6):
         super().__init__()
         self.prompt_tools = prompt_tool or PromptTool()
+        self.tools = [
+            self.prompt_tools.classify_inputs,
+            self.prompt_tools.search_prompts,
+            self.prompt_tools.update_prompt,
+        ]
         self.react = dspy.ReAct(
             signature=ChatbotSignature,
-            tools=[
-                self.prompt_tools.classify_input,
-                self.prompt_tools.search_prompts,
-                self.prompt_tools.update_prompt,
-            ],
+            tools=self.tools,
             max_iters=max_iters,
         )
 
