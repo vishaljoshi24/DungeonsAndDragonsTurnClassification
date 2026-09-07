@@ -142,7 +142,7 @@ class InstructedChatbot(dspy.Module):
         super().__init__()
         self.prompt_tools = prompt_tool or PromptTool()
         self.tools = [
-            self.prompt_tools.classify_inputs,
+            self.prompt_tools.classify_input,
             self.prompt_tools.search_prompts,
             self.prompt_tools.update_prompt,
         ]
