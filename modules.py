@@ -65,7 +65,7 @@ class PromptTool:
         classifier: ClassifyTurns | None = None,
     ):
         self.prompts = self._load_prompts(prompts_path)
-        self.classify = ClassifyTurns()
+        self.classify = classifier if classifier is not None else ClassifyTurns()
 
     @staticmethod
     def _load_prompts(prompts_path: str | Path) -> dict[str, str]:
