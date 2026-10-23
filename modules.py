@@ -12,7 +12,7 @@ from signatures import Assess, ChatbotSignature, TurnClassifier
 
 DEFAULT_MODEL = "ollama_chat/qwen3:8b"
 DEFAULT_API_BASE = "http://localhost:11434"
-DEFAULT_CLASSIFIER_PATH = Path(__file__).with_name("optimized_classifiers/bfs_qwen3_4b_default_run_0.json")
+DEFAULT_CLASSIFIER_PATH = Path(__file__).parent / "optimized_classifiers" / "bfs_qwen3_4b_default_run_0.json"
 DEFAULT_INSTRUCTIONS_PATH = Path(__file__).with_name("instructions.xlsx")
 
 
