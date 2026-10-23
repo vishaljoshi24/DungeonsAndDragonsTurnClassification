@@ -1,0 +1,454 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "machine_shape": "hm",
+      "gpuType": "T4",
+      "runtime_attributes": {
+        "runtime_version": "2026.04"
+      },
+      "authorship_tag": "ABX9TyNDqh9XdQmOTD5tIeSUfSv+",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    },
+    "accelerator": "GPU"
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/vishaljoshi24/DungeonsAndDragonsTurnClassification/blob/Codex-Branch/Error%20checked.%20Now%20need%20to%20generate%20new%20instructions\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "PPR_YQkQLO35"
+      },
+      "outputs": [],
+      "source": [
+        "!git clone -b Codex-Branch https://github.com/vishaljoshi24/DungeonsAndDragonsTurnClassification/\n",
+        "%cd /content/DungeonsAndDragonsTurnClassification"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import requests\n",
+        "\n",
+        "response = requests.get(\"http://127.0.0.1:11434/api/tags\", timeout=10)\n",
+        "print(response.status_code)\n",
+        "print(response.json())"
+      ],
+      "metadata": {
+        "id": "d05Q7XlyiEZO"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import subprocess\n",
+        "\n",
+        "result = subprocess.run(\n",
+        "    [\"ollama\", \"pull\", \"qwen3:4b\"],\n",
+        "    capture_output=False,\n",
+        "    text=True,\n",
+        ")\n",
+        "\n",
+        "print(\"Download finished with exit code:\", result.returncode)"
+      ],
+      "metadata": {
+        "id": "2Z-pYZIuiXOs"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import requests\n",
+        "\n",
+        "response = requests.get(\"http://127.0.0.1:11434/api/tags\", timeout=10)\n",
+        "response.raise_for_status()\n",
+        "\n",
+        "models = response.json()[\"models\"]\n",
+        "for model in models:\n",
+        "    print(model[\"name\"])"
+      ],
+      "metadata": {
+        "id": "OPhEKvakjdd-"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!pip install dspy==3.2.1"
+      ],
+      "metadata": {
+        "id": "kBrcof-6OmEB"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import argparse"
+      ],
+      "metadata": {
+        "id": "Yh9wF9u6OpVf"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from modules import  (\n",
+        "    AgentProfile,\n",
+        "    MultiAgentConversation,\n",
+        "    TwoAgentConversation,\n",
+        "    configure_lm,\n",
+        "    PromptTool,\n",
+        "    InstructedChatbot\n",
+        ")"
+      ],
+      "metadata": {
+        "id": "4_P83QcwOp8z"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "RAT_INFESTATION_SCENARIO = (\n",
+        "'This D&D short scenario specifically concerns a rat infestation. '\n",
+        "'It is set in a craft brewery and is in dire need of help. '\n",
+        "'The players in this scenario are Alice and Bob.'\n",
+        "'The non-player character is Charlie, and he is controlled by the Dungeon Master. '\n",
+        "'Alice and Bob are here to sort out a RAT INFESTATION in the brewery\\'s BASEMENT. '\n",
+        "'For the duration of the scenario, only Alice, Bob and the brewery owner Charlie are in the brewery '\n",
+        "'At the beginning of this adventure Alice and Bob '\n",
+        "'meet in the main taproom of the brewery. These two adventurers '\n",
+        "'DO NOT know each other AT FIRST and need to get to know each other. '\n",
+        "'Charlie hands out pints of Ale to Alice and Bob as they get to know each other. '\n",
+        "'Alice and Bob have the following objectives: '\n",
+        "# 'Alice and Bob should start by asking Charlie for some information about the infestation. '\n",
+        "# 'Alice and Bob should then come up with a strategy for clearing out the infestation. '\n",
+        "# 'Finally, Alice and Bob should explore the brewery\\'s cellar based on their strategy. '\n",
+        "# 'The scenario ends before players start combat. '\n",
+        "'1. Alice and Bob need to find out where the rats in the cellar were first seen coming from.'\n",
+        "'2. Alice and Bob need a map of the cellar.'\n",
+        "'3. Alice and Bob need a key to enter the cellar.'\n",
+        "'4. Alice and Bob should consult the map when planning their approach.'\n",
+        "'5. Alice and Bob need to discuss their formation when approaching the cellar.'\n",
+        "'6. Alice and Bob should discuss which resources they have which can help with their exploration of the cellar.'\n",
+        "'7. Alice and Bob should move down into the cellar based on the formation they discussed.'\n",
+        "'8. Alice and Bob should use the resources they discussed, to carry out their exploration.'\n",
+        "'9. Alice and Bob need to find signs of the infestation.'\n",
+        ")\n",
+        "\n",
+        "MISSING_CHILD_SCENARIO = (\n",
+        "  'This D&D short campaign specifically concerns Diana, a magical walrus who has brought a group of animals to safety. '\n",
+        "  'She has brought the animals to the mountains, hoping to protect them from being used by an evil druid to wreak havoc on the local area. '\n",
+        "  'She requests the help of Alice and Bob to stem the threats against everyone. '\n",
+        "  'For the duration of this scenario, only Alice, Bob and Diana are in a cave in the mountains. ',\n",
+        "  'At the beginning of this adventure Alice and Bob '\n",
+        "  'meet Diana at her cave in the mountains. The three adventurers '\n",
+        "  'DO NOT know each other AT FIRST and need to get to know each other.'\n",
+        "  'The cave in which the three characters meet has a river which flows out to the open air. '\n",
+        "  'Diana asks Alice and Bob to find her child, an awakened otter that has been spying on a nearby city. '\n",
+        "  'Alice and Bob should start by asking Diana some questions about the missing child. '\n",
+        "  'Alice and Bob should then come up with a strategy for their search of the child. '\n",
+        "  'Finally, Alice and Bob should explore the surrounding mountains based on their strategy. '\n",
+        ")"
+      ],
+      "metadata": {
+        "id": "L4UfoYajOsw6"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "instructions_path = \"instructions.xlsx\"\n",
+        "prompt_tool = PromptTool(prompts_path=instructions_path)"
+      ],
+      "metadata": {
+        "id": "U4tX4B6nOxBf"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def build_conversation() -> MultiAgentConversation:\n",
+        "    alice = AgentProfile(\n",
+        "        name=\"Alice\",\n",
+        "        character=\"Alice, a dwarf barbarian.\",\n",
+        "        instructions=(\n",
+        "        'The instructions for how to play the role of a D&D player are as '\n",
+        "        'follows. This is a short scenario in which you '\n",
+        "        f'play the role of a character named Alice. This scenario '\n",
+        "        'is structured as a Dungeons & Dragons game. '\n",
+        "        'The goal is to be consistent, but creative. It is '\n",
+        "        'important to play the role of a Dungeons & Dragons player as '\n",
+        "        'accurately as possible, i.e., by responding in ways that you think '\n",
+        "        'it is likely a player would respond, and taking '\n",
+        "        'into account all information that you have. '\n",
+        "        'It is important that you collaborate with the  '\n",
+        "        'other player, on the task at hand and listen to the Dungeon Master\\'s '\n",
+        "        'insturctions.'\n",
+        "        'Do not be verbose. '\n",
+        "        'Do not repeat yourself. '\n",
+        "        'Always use first-person limited perspective.'\n",
+        "        ),\n",
+        "        inventory = [\n",
+        "                \"One set of common clothes\",\n",
+        "                \"Two daggers\",\n",
+        "                \"One axe\",\n",
+        "                \"50 feet of rope\",\n",
+        "                \"One tinderbox\",\n",
+        "                \"One torch\",\n",
+        "            ],\n",
+        "        abilities = {\"\"},\n",
+        "        skills = {\"\"},\n",
+        "    )\n",
+        "    bob = AgentProfile(\n",
+        "        name=\"Bob\",\n",
+        "        character=\"Bob, a wizard.\",\n",
+        "        instructions=(\n",
+        "        'The instructions for how to play the role of a D&D player are as '\n",
+        "        'follows. This is a short scenario in which you '\n",
+        "        f'play the role of a character named Bob. This scenario '\n",
+        "        'is structured as a Dungeons & Dragons game. '\n",
+        "        'The goal is to be consistent, but creative. It is '\n",
+        "        'important to play the role of a Dungeons & Dragons player as '\n",
+        "        'accurately as possible, i.e., by responding in ways that you think '\n",
+        "        'it is likely a player would respond, and taking '\n",
+        "        'into account all information that you have. '\n",
+        "        'It is important that you collaborate with the  '\n",
+        "        'other player, on the task at hand and listen to the Dungeon Master\\'s '\n",
+        "        'insturctions.'\n",
+        "        'Do not be verbose. '\n",
+        "        'Do not repeat yourself. '\n",
+        "        'Always use first-person limited perspective.'\n",
+        "        ),\n",
+        "        inventory = [\n",
+        "                \"One Wizard's Staff\",\n",
+        "                \"One can of oil\",\n",
+        "                \"One tinderbox\",\n",
+        "                \"Thunderwave spell: You unleash a wave of thunderous energy.\",\n",
+        "                \"Command spell: You speak a one-word command to a creature you can see within range.\"\n",
+        "            ],\n",
+        "        abilities = {\"\"},\n",
+        "        skills = {\"\"},\n",
+        "    )\n",
+        "    dungeon_master = AgentProfile(\n",
+        "          name=\"Dungeon Master\",\n",
+        "          character=\"The Dungeon Master, who also plays the role of Charlie: the owner of the Wizards Tower Brewing Company.\",\n",
+        "          instructions= (\n",
+        "          'This is a tabletop role-playing game: Dungeons & Dragons. You are the Dungeon Master.'\n",
+        "          'You will describe the current situation to the players in the game and then on the basis '\n",
+        "          'of what you tell them they will suggest actions for the character they control. '\n",
+        "          'You will then decide if the action is valid based on Dungeons & Dragons 5th Edition rules. '\n",
+        "          'Aside from you, each other player controls just one character. '\n",
+        "          'If any of the players deviates dramatically from the scenario your response should attempt to re-orient the scenario. '\n",
+        "          'You are the Dungeon Master so you control any non-player characters or adversaries. '\n",
+        "          'You can answer player\\'s questions and give them any items they need, but you should '\n",
+        "          'not get involved with the task directly. '\n",
+        "          'You will track the state of the world and keep it consistent as time  '\n",
+        "          'passes in the simulation and the players take actions and change things in their world. '\n",
+        "          'Remember that this is a game. It should be fun for the players. '\n",
+        "          'You should use second-person perspective, when speaking directly to the players. '\n",
+        "          'You should use first-person limited perspective when role-playing as non-player characters and adversaries.'\n",
+        "          'Do not be verbose. Do not repeat yourself.'\n",
+        "          ),\n",
+        "          inventory = [\"\"],\n",
+        "          abilities = {\"\"},\n",
+        "          skills = {\"\"},\n",
+        "    )\n",
+        "\n",
+        "    return MultiAgentConversation(\n",
+        "        agent_a=alice,\n",
+        "        agent_b=bob,\n",
+        "        agent_c=dungeon_master,\n",
+        "        scenario=RAT_INFESTATION_SCENARIO,\n",
+        "        chatbot_a=InstructedChatbot(prompt_tool=prompt_tool),\n",
+        "        chatbot_b=InstructedChatbot(prompt_tool=prompt_tool),\n",
+        "        chatbot_c=InstructedChatbot(prompt_tool=prompt_tool)\n",
+        "    )"
+      ],
+      "metadata": {
+        "id": "nyy0qLFTQ2kc"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "parser = argparse.ArgumentParser(description=\"Run three D&D DSPy agents together.\")"
+      ],
+      "metadata": {
+        "id": "rngUhT8DQ58a"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "parser.add_argument(\n",
+        "    \"--opening-message\",\n",
+        "    default=\"You find yourselves in a craft brewery, questioning the brewery's owner Charlie about a rat infestation.\",\n",
+        "    help=\"The first turn spoken by the Dungeon Master.\",\n",
+        ")"
+      ],
+      "metadata": {
+        "id": "vcYvThWxR_PS"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "parser.add_argument(\n",
+        "    \"--rounds\",\n",
+        "    type=int,\n",
+        "    default=15,\n",
+        "    help=\"Number of replies to generate after the opening message.\",\n",
+        ")"
+      ],
+      "metadata": {
+        "id": "VgzXxL2FSDjh"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "parser.add_argument(\"--model\", default=\"ollama_chat/qwen3:4b\")"
+      ],
+      "metadata": {
+        "id": "BhI4KX0ESEcF"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "parser.add_argument(\"--api-base\", default=\"http://localhost:11434\")"
+      ],
+      "metadata": {
+        "id": "Q1IZixLBSHCP"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "parser.add_argument(\n",
+        "    \"--cache\",\n",
+        "    action=\"store_true\",\n",
+        "    help=\"Enable LM response caching (disabled by default)\",\n",
+        ")"
+      ],
+      "metadata": {
+        "id": "-DDBh54LlAaS"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "args = parser.parse_args([])"
+      ],
+      "metadata": {
+        "id": "zgXfbtTPSJLK"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "configure_lm(model=args.model, api_base=args.api_base, cache=args.cache)"
+      ],
+      "metadata": {
+        "id": "jJdESJ68SLGo"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "conversation = build_conversation()"
+      ],
+      "metadata": {
+        "id": "KO5TxaaLSM_B"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "for turn in conversation.run(args.opening_message, rounds=args.rounds):\n",
+        "    print(turn)"
+      ],
+      "metadata": {
+        "id": "OtyMStprSO4b"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import dspy\n",
+        "dspy.inspect_history(n=10)"
+      ],
+      "metadata": {
+        "id": "yeX_LhOBSRdw"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "DVe0fSaDaWX2"
+      },
+      "execution_count": null,
+      "outputs": []
+    }
+  ]
+}
