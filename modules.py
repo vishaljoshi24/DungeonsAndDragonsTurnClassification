@@ -48,7 +48,7 @@ def _prediction_label(prediction: Any) -> str:
 class ClassifyTurns(dspy.Module):
     def __init__(self, optimized_path: str | Path | None = DEFAULT_CLASSIFIER_PATH):
         super().__init__()
-        self.classifier = dspy.ChainOfThought(TurnClassifier, caching=False)
+        self.classifier = dspy.Predict(TurnClassifier, caching=False)
         if optimized_path and Path(optimized_path).exists():
             self.load(str(optimized_path))
 
