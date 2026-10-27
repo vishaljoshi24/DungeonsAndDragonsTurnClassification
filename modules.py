@@ -122,11 +122,11 @@ class PromptTool:
         return f"Updated prompt with new instructions: {updated_prompt}"
 
 class BaselineChatbot(dspy.Module):
-    """A CoT D&D player agent with basline behaviour instructions."""
+    """A D&D player agent with behaviour instructions."""
 
     def __init__(self):
         super().__init__()
-        self.baseline_agent = dspy.ReAct(signature=ChatbotSignature)
+        self.baseline_agent = dspy.Predict(signature=ChatbotSignature)
 
     def forward(self, instruct_prompt: str, scenario_context: str, user_input: str):
         """Process another agent's input with prompt aware reasoning"""
