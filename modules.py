@@ -20,7 +20,7 @@ def configure_lm(
     model: str = DEFAULT_MODEL,
     api_base: str = DEFAULT_API_BASE,
     api_key: str = "",
-    max_tokens: int = 4096,
+    max_tokens: int = 8192,
     cache: bool = False,
 ) -> dspy.LM:
     """Configure DSPy for the local Ollama-backed model used in the notebooks."""
@@ -126,7 +126,7 @@ class BaselineChatbot(dspy.Module):
 
     def __init__(self):
         super().__init__()
-        self.baseline_agent = dspy.ChainOfThought(signature=ChatbotSignature)
+        self.baseline_agent = dspy.ReAct(signature=ChatbotSignature)
 
     def forward(self, instruct_prompt: str, scenario_context: str, user_input: str):
         """Process another agent's input with prompt aware reasoning"""
