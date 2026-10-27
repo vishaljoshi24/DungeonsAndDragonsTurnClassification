@@ -88,7 +88,7 @@ class PromptTool:
     ) -> str:
         """Classify a player's input into a D&D behaviour category."""
 
-        prompt_class = self.classify(context=context, question=query)
+        prompt_class = self.classify(context=context, question=query).response
         return prompt_class
 
     def search_prompts(
