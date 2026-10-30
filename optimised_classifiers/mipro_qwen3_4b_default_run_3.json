@@ -1,0 +1,32 @@
+{
+  "classifier": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "Given the context for a Dungeons & Dragons game turn and the game turn itself, classify the turn.",
+      "fields": [
+        {
+          "prefix": "Context:",
+          "description": "The three previous game turns which describe a player's action or their dialogue."
+        },
+        {
+          "prefix": "Question:",
+          "description": "The current turn taken by a player, which can include a description of an action or a piece of dialogue."
+        },
+        {
+          "prefix": "Response:",
+          "description": "${response}"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "metadata": {
+    "dependency_versions": {
+      "python": "3.12",
+      "dspy": "3.2.1",
+      "cloudpickle": "3.1"
+    }
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "classifier": {
+    "traces": [],
+    "train": [],
+    "demos": [
+      {
+        "augmented": true,
+        "context": "Dialogue context: MATT: The fresher wounds seal up, the blood flow comes to a stop. You see her muscles tense for a moment - her tension in her muscles relax for a minute. She looks to you for a second and says, \"It's been a while since I've heard a song. Thank you.\" MATT: The fresher wounds seal up, the blood flow comes to a stop. You see her muscles tense for a moment - her tension in her muscles relax for a minute. She looks to you for a second and says, \"It's been a while since I've heard a song. Thank you.\" SAM: It was a slow jam.",
+        "question": "TALIESIN: Please be careful for a moment. Can someone cover her ears for just a second?",
+        "response": "propose intention or action"
+      },
+      {
+        "augmented": true,
+        "context": "Dialogue context: LAURA: Oh goodness, oh goodness! TALIESIN: It's going to be fun! Savage burning-- TRAVIS: I'm right with Minxy, competing for first place.",
+        "question": "LIAM: I place a hand on Lady Kima’s shoulder--",
+        "response": "act on game-state"
+      },
+      {
+        "context": "Dialogue context: LAURA: Come on, roll a 20! LIAM: And say, \"We all want the same thing. Kima. Tell us. What is it that you've come here for? What is your purpose here? Speak your mind, if you are true.\" MATT: Kima turns back towards you, the same glowing flare in her eyes. \"I've come here to rid this mountain and this continent of the darkness that resides deep within the bowels of this thing's city!\"",
+        "question": "LIAM: Clarota, why have you come here. What is it you seek?",
+        "response": "probe intention"
+      },
+      {
+        "context": "Dialogue context: TRAVIS: Greatsword it is. MATT: She takes it from you, and the sword is a little over a foot taller than she is. Maybe a little more than that. LAURA: She's really fricking buff.",
+        "question": "MATT: But as you hand it to her, she still takes it, and you can see--",
+        "response": "interact with resource"
+      }
+    ],
+    "signature": {
+      "instructions": "Classify the latest player utterance in a Dungeons & Dragons dialogue into one of three categories: 'actions modifying game state', 'declarations of current state', or 'inquiries about state'. Use only the most recent exchange (the latest utterance and the immediately preceding messages) for classification.",
+      "fields": [
+        {
+          "prefix": "Context:",
+          "description": "The three previous game turns which describe a player's action or their dialogue."
+        },
+        {
+          "prefix": "Question:",
+          "description": "The current turn taken by a player, which can include a description of an action or a piece of dialogue."
+        },
+        {
+          "prefix": "Response:",
+          "description": "${response}"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "metadata": {
+    "dependency_versions": {
+      "python": "3.12",
+      "dspy": "3.2.1",
+      "cloudpickle": "3.1"
+    }
+  }
+}

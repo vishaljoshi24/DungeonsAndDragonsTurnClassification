@@ -1,0 +1,55 @@
+{
+  "classifier": {
+    "traces": [],
+    "train": [],
+    "demos": [
+      {
+        "augmented": true,
+        "context": "Dialogue context: MATT: He sits up and looks at-- (laughs) That's fucked up. Sits up and looks back at you and - (ragged breathing) \"Thank ye. Thank ye kindly.\" LAURA: Here's some cheese! (all laugh) MATT: He takes it hungrily through the bars and just starts eating it, incessantly, as you leave.",
+        "question": "TALIESIN: Government cheese.",
+        "response": "out-of-gameplay"
+      },
+      {
+        "augmented": true,
+        "context": "Dialogue context: MATT: He takes it hungrily through the bars and just starts eating it, incessantly, as you leave. TALIESIN: Government cheese. LIAM: Is provolone all you've got?",
+        "question": "MATT: Lady Kima's already up the stairs.",
+        "response": "assert game-state"
+      },
+      {
+        "context": "Dialogue context: TRAVIS: That's hot. MATT: --there's a blister across her wrist, from how long she's been pulling against these restraints. But she bore through it, with a little bit of blood that trickles from that wound. She has freed herself and she looks around the rest of the group. \"So, I take it you're not from around here?\" MATT: --there's a blister across her wrist, from how long she's been pulling against these restraints. But she bore through it, with a little bit of blood that trickles from that wound. She has freed herself and she looks around the rest of the group. \"So, I take it you're not from around here?\"",
+        "question": "ORION: No! Would you like some water?",
+        "response": "interact with resource"
+      },
+      {
+        "context": "Dialogue context: SAM: It was a slow jam. TALIESIN: Please be careful for a moment. Can someone cover her ears for just a second? TRAVIS: Yeah, I got it.",
+        "question": "ASHLEY: Earmuffs.",
+        "response": "interact with resource"
+      }
+    ],
+    "signature": {
+      "instructions": "Given a D&D dialogue context and a player's action, classify it into one of: `act on game-state`, `assert game-state`, or `question game-state`.",
+      "fields": [
+        {
+          "prefix": "Context:",
+          "description": "The three previous game turns which describe a player's action or their dialogue."
+        },
+        {
+          "prefix": "Question:",
+          "description": "The current turn taken by a player, which can include a description of an action or a piece of dialogue."
+        },
+        {
+          "prefix": "Response:",
+          "description": "${response}"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "metadata": {
+    "dependency_versions": {
+      "python": "3.12",
+      "dspy": "3.2.1",
+      "cloudpickle": "3.1"
+    }
+  }
+}

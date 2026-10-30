@@ -1,0 +1,117 @@
+{
+  "classifier": {
+    "traces": [],
+    "train": [],
+    "demos": [
+      {
+        "augmented": true,
+        "context": "Dialogue context: MARISHA: Just gnawing on the dead dwarf. LAURA: Oh, well, let's make this nice and easy. I smack Grog on the ass and say, \"Go get him\". LAURA: Oh, well, let's make this nice and easy. I smack Grog on the ass and say, \"Go get him\".",
+        "question": "TRAVIS: (eager snarling)",
+        "response": "act on game-state"
+      },
+      {
+        "augmented": true,
+        "context": "Dialogue context: TRAVIS: (eager snarling) MATT: All right, Grog, it's your turn. TRAVIS: (eager snarling continues)",
+        "question": "MARISHA: Does he get advantage because we're all encouraging violence?",
+        "response": "question game-state"
+      },
+      {
+        "augmented": true,
+        "context": "Dialogue context: MATT: Oh no, you get inspiration dice for this whole set up. 1d8 inspiration dice. SAM: You don't kill him in one shot, it's very very disappointing. MATT: All right, you run in.",
+        "question": "TRAVIS: You said the room was full of shiny pointy things on the wall, right?",
+        "response": "question game-state"
+      },
+      {
+        "augmented": true,
+        "context": "Dialogue context: MATT: All right, you run in. TRAVIS: You said the room was full of shiny pointy things on the wall, right? MATT: Yes.",
+        "question": "TRAVIS: I would like to bull rush the dwarf up and against the wall, try and spear him with all the sharp shit on the wall.",
+        "response": "propose intention or action"
+      },
+      {
+        "context": "Dialogue context: ORION: (shouting) \"Lady Kima!\" And I blow fire breath. And I use Control Flames to create a bunch of swords around me with fire. LAURA: Don't threaten Kima! She's better. ORION: (harshly) I give you my word.",
+        "question": "MATT: Her attention divided from Clarota, now tends towards you.",
+        "response": "assert game-state"
+      },
+      {
+        "context": "Dialogue context: MATT: But as you hand it to her, she still takes it, and you can see-- LIAM: She's a ripped halfling. LAURA: That's pretty badass.",
+        "question": "MATT: --she is a built halfling female. She has seen some war, and she has survived some shit.",
+        "response": "assert game-state"
+      },
+      {
+        "context": "Dialogue context: TRAVIS: Oh, shit. LIAM: Well, that's that then. ORION: You'll have a friend in us, that's for sure.",
+        "question": "LAURA: Let's find the frigging vault!",
+        "response": "propose intention or action"
+      },
+      {
+        "context": "Dialogue context: ASHLEY: Who is she? TRAVIS: Wait, wait. Find out who she is first. LAURA: Can we insight and make sure that it's really who she--",
+        "question": "MATT: You can indeed. This is an insight check.",
+        "response": "assert game-state"
+      },
+      {
+        "context": "Dialogue context: SAM: But I have a plus 13! So that's a 16. LIAM: Plus 13? 3 plus 13? Okay. ASHLEY: Plus, plus, uh... hold on. (all laugh)",
+        "question": "ASHLEY: Because, you didn't- where the fuck. (all laugh)",
+        "response": "out-of-gameplay"
+      },
+      {
+        "context": "Dialogue context: MATT: Clarota puts the hands folded back together. (unimpressed huff) (breathy voice) \"Shall we?\" And walks up the stairs after her. And you all begin to ascend back onto the first floor and that’s where we’ll end the game for this evening. (Multiple groans and exclamations) MARISHA: What? No. What time is it? I thought we just got started? TRAVIS: I thought we were going to have to pick. We got like ten more minutes!",
+        "question": "MARISHA: Yeah, we have ten more minutes.",
+        "response": "out-of-gameplay"
+      },
+      {
+        "context": "Dialogue context: MARISHA: Does he get advantage because we're all encouraging violence? ORION: Yeah, or inspiration? MATT: Oh no, you get inspiration dice for this whole set up. 1d8 inspiration dice.",
+        "question": "SAM: You don't kill him in one shot, it's very very disappointing.",
+        "response": "assert game-state"
+      },
+      {
+        "context": "Dialogue context: MARISHA: And they say video games are violent. (all laugh) LAURA: (gagging sounds) MATT: As you've entered the room now--",
+        "question": "ASHLEY: Wait, is he dead? (all laugh)",
+        "response": "question game-state"
+      },
+      {
+        "context": "Dialogue context: ORION: Yes! TRAVIS: Uh, what was that word? LIAM: I'm right at her shoulder, so I say, \"We understand he's dangerous, but he's gotten us this far.\"",
+        "question": "MATT: \"And for what purpose? You think they don't have plots lined out for weeks and months--\"",
+        "response": "argue"
+      },
+      {
+        "context": "Dialogue context: ORION: She's Allura's friend, right? TRAVIS: We're going to throw down, this is gonna be Marvel versus DC in this bitch. LAURA: She's Allura's friend, she's good!",
+        "question": "LIAM: Undecided, I don't know.",
+        "response": "out-of-gameplay"
+      },
+      {
+        "context": "Dialogue context: MATT: It's a very small room, only a few people can make it in here. SAM: I'm gonna take a peek at her. What do I do? What do I roll? LIAM: Insight to see if she's in her right mind.",
+        "question": "ASHLEY: 15? 18 is better.",
+        "response": "assert game-state"
+      },
+      {
+        "context": "Dialogue context: MATT: As you've entered the room now-- ASHLEY: Wait, is he dead? (all laugh) MATT: Oh, he's very dead.",
+        "question": "TRAVIS: We made cheese of him.",
+        "response": "assert game-state"
+      }
+    ],
+    "signature": {
+      "instructions": "Given the context for a Dungeons & Dragons game turn and the game turn itself, classify the turn.",
+      "fields": [
+        {
+          "prefix": "Context:",
+          "description": "The three previous game turns which describe a player's action or their dialogue."
+        },
+        {
+          "prefix": "Question:",
+          "description": "The current turn taken by a player, which can include a description of an action or a piece of dialogue."
+        },
+        {
+          "prefix": "Response:",
+          "description": "${response}"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "metadata": {
+    "dependency_versions": {
+      "python": "3.12",
+      "dspy": "3.2.1",
+      "cloudpickle": "3.1"
+    }
+  }
+}

@@ -1,0 +1,121 @@
+{
+  "classifier": {
+    "traces": [],
+    "train": [],
+    "demos": [
+      {
+        "augmented": true,
+        "context": "Dialogue context: MATT: All right. Vex? MARISHA: Just gnawing on the dead dwarf. MARISHA: Just gnawing on the dead dwarf.",
+        "question": "LAURA: Oh, well, let's make this nice and easy. I smack Grog on the ass and say, \"Go get him\".",
+        "response": "act on game-state"
+      },
+      {
+        "augmented": true,
+        "context": "Dialogue context: MARISHA: Just gnawing on the dead dwarf. LAURA: Oh, well, let's make this nice and easy. I smack Grog on the ass and say, \"Go get him\". LAURA: Oh, well, let's make this nice and easy. I smack Grog on the ass and say, \"Go get him\".",
+        "question": "TRAVIS: (eager snarling)",
+        "response": "act on game-state"
+      },
+      {
+        "augmented": true,
+        "context": "Dialogue context: TRAVIS: (eager snarling) MATT: All right, Grog, it's your turn. TRAVIS: (eager snarling continues)",
+        "question": "MARISHA: Does he get advantage because we're all encouraging violence?",
+        "response": "question game-state"
+      },
+      {
+        "augmented": true,
+        "context": "Dialogue context: MATT: All right, you run in. TRAVIS: You said the room was full of shiny pointy things on the wall, right? MATT: Yes.",
+        "question": "TRAVIS: I would like to bull rush the dwarf up and against the wall, try and spear him with all the sharp shit on the wall.",
+        "response": "propose intention or action"
+      },
+      {
+        "augmented": true,
+        "context": "Dialogue context: MATT: Yes. TRAVIS: I would like to bull rush the dwarf up and against the wall, try and spear him with all the sharp shit on the wall. MATT: Okay!",
+        "question": "ALL: (cheering)",
+        "response": "acknowledge"
+      },
+      {
+        "augmented": true,
+        "context": "Dialogue context: TRAVIS: Excellent! MATT: That's 12 points of damage and he's currently restrained by the hook through his chest. LAURA: Impaled? Oh!",
+        "question": "TRAVIS: Perfect! With my second attack as he's screaming out I reach inside, grab his lower jaw and pull him straight down.",
+        "response": "act on game-state"
+      },
+      {
+        "augmented": true,
+        "context": "Dialogue context: SAM: Keyleth starts eating him. TRAVIS: (laughing) 24. MATT: (laughs) Go ahead and roll damage on this.",
+        "question": "LAURA: Oh, sick.",
+        "response": "acknowledge"
+      },
+      {
+        "augmented": true,
+        "context": "Dialogue context: TRAVIS: (laughing) 24. MATT: (laughs) Go ahead and roll damage on this. LAURA: Oh, sick.",
+        "question": "TRAVIS: With a 12?",
+        "response": "question game-state"
+      },
+      {
+        "context": "Dialogue context: SAM: Let's go, but should we unlock all the other dwarves? LAURA: Yes, let's let all the other dwarves out, and maybe give them some food to try to help them out, if we can. TRAVIS: In the meantime, I have a greatsword or a morningstar mace that you can have until we find your items.",
+        "question": "MATT: \"Greatsword.\"",
+        "response": "interact with resource"
+      },
+      {
+        "context": "Dialogue context: TRAVIS: Perfect! With my second attack as he's screaming out I reach inside, grab his lower jaw and pull him straight down. MATT: Okay, make an attack roll. LAURA: Oh no! That's so gross.",
+        "question": "ASHLEY: Oh, I love this so much.",
+        "response": "out-of-gameplay"
+      },
+      {
+        "context": "Dialogue context: LIAM: I place a hand on Lady Kima’s shoulder-- MARISHA: First place, for how fucked-up we are. TRAVIS: Perfection! (laughs)",
+        "question": "MARISHA: Perfection! (laughs)",
+        "response": "out-of-gameplay"
+      },
+      {
+        "context": "Dialogue context: MATT: (disgusted groan) Velveeta! SAM: We're following up the stairs. MARISHA: (laughs) It's calories!",
+        "question": "MATT: All right. Clean this off here.",
+        "response": "propose intention or action"
+      },
+      {
+        "context": "Dialogue context: MATT: \"Your mace, please.\" ASHLEY: What do you need it for? (all laugh) TRAVIS: You can have mine.",
+        "question": "MATT: \"Do you trust me?\"",
+        "response": "probe intention"
+      },
+      {
+        "context": "Dialogue context: MATT: Clarota steps back, hands up in front, this little spark of arcane energy forming in his hands. Clarota [sic], bringing the sword up in front of her, pushes Clarota aside and continues ascending back up the stairs to the first level. (offscreen thump) MATT: Clarota steps back, hands up in front, this little spark of arcane energy forming in his hands. Clarota [sic], bringing the sword up in front of her, pushes Clarota aside and continues ascending back up the stairs to the first level. (offscreen thump) MATT: Clarota steps back, hands up in front, this little spark of arcane energy forming in his hands. Clarota [sic], bringing the sword up in front of her, pushes Clarota aside and continues ascending back up the stairs to the first level. (offscreen thump)",
+        "question": "MATT: --To the first level. (all laugh)",
+        "response": "assert game-state"
+      },
+      {
+        "context": "Dialogue context: TALIESIN: I'm going to utility shot - I'm going to put my gun against the lock, somewhere where it will not harm her and just blow it. MATT: Go ahead and roll damage. You don't have to roll to hit, it's right there. TALIESIN: 15. Is it two locks?",
+        "question": "MATT: Well, there's one chain for the legs, one chain for the arms.",
+        "response": "assert game-state"
+      },
+      {
+        "context": "Dialogue context: SAM: You just want her because she's badass and you could hump her. TRAVIS: Yeah! (all laugh) MATT: Oh, Grog.",
+        "question": "LAURA: That would be the most awkward humping ever.",
+        "response": "out-of-gameplay"
+      }
+    ],
+    "signature": {
+      "instructions": "Given the context for a Dungeons & Dragons game turn and the game turn itself, classify the turn.",
+      "fields": [
+        {
+          "prefix": "Context:",
+          "description": "The three previous game turns which describe a player's action or their dialogue."
+        },
+        {
+          "prefix": "Question:",
+          "description": "The current turn taken by a player, which can include a description of an action or a piece of dialogue."
+        },
+        {
+          "prefix": "Response:",
+          "description": "${response}"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "metadata": {
+    "dependency_versions": {
+      "python": "3.12",
+      "dspy": "3.2.1",
+      "cloudpickle": "3.1"
+    }
+  }
+}

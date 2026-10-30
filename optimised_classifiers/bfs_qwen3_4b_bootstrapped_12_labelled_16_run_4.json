@@ -1,0 +1,125 @@
+{
+  "classifier": {
+    "traces": [],
+    "train": [],
+    "demos": [
+      {
+        "augmented": true,
+        "context": "Dialogue context: MATT: All right. Vex? MARISHA: Just gnawing on the dead dwarf. MARISHA: Just gnawing on the dead dwarf.",
+        "question": "LAURA: Oh, well, let's make this nice and easy. I smack Grog on the ass and say, \"Go get him\".",
+        "response": "act on game-state"
+      },
+      {
+        "augmented": true,
+        "context": "Dialogue context: MARISHA: Just gnawing on the dead dwarf. LAURA: Oh, well, let's make this nice and easy. I smack Grog on the ass and say, \"Go get him\". LAURA: Oh, well, let's make this nice and easy. I smack Grog on the ass and say, \"Go get him\".",
+        "question": "TRAVIS: (eager snarling)",
+        "response": "act on game-state"
+      },
+      {
+        "augmented": true,
+        "context": "Dialogue context: LAURA: Oh, well, let's make this nice and easy. I smack Grog on the ass and say, \"Go get him\". TRAVIS: (eager snarling) MATT: All right, Grog, it's your turn.",
+        "question": "TRAVIS: (eager snarling continues)",
+        "response": "act on game-state"
+      },
+      {
+        "augmented": true,
+        "context": "Dialogue context: MATT: Oh no, you get inspiration dice for this whole set up. 1d8 inspiration dice. SAM: You don't kill him in one shot, it's very very disappointing. MATT: All right, you run in.",
+        "question": "TRAVIS: You said the room was full of shiny pointy things on the wall, right?",
+        "response": "question game-state"
+      },
+      {
+        "augmented": true,
+        "context": "Dialogue context: MATT: All right, you run in. TRAVIS: You said the room was full of shiny pointy things on the wall, right? MATT: Yes.",
+        "question": "TRAVIS: I would like to bull rush the dwarf up and against the wall, try and spear him with all the sharp shit on the wall.",
+        "response": "propose intention or action"
+      },
+      {
+        "augmented": true,
+        "context": "Dialogue context: MATT: Yes. TRAVIS: I would like to bull rush the dwarf up and against the wall, try and spear him with all the sharp shit on the wall. MATT: Okay!",
+        "question": "ALL: (cheering)",
+        "response": "acknowledge"
+      },
+      {
+        "augmented": true,
+        "context": "Dialogue context: LIAM: Instant karma's going to get you, man. MATT: All right, so go ahead and make an athletics check. LIAM: You hear that, Keyleth?",
+        "question": "MARISHA: (growling)",
+        "response": "act on game-state"
+      },
+      {
+        "augmented": true,
+        "context": "Dialogue context: MATT: Yeah, against his 7. You rush in and with your first attack, you grab him, lift him, and you can see there's a series of giant meat hooks hanging from the back of the wall, and you just lift him up and (impaling SFX) shove him down onto the hook which protrudes from the front of his chest. (gurgling SFX) TRAVIS: No, perfect. Tell me I get another attack. MATT: You do.",
+        "question": "TRAVIS: Excellent!",
+        "response": "acknowledge"
+      },
+      {
+        "augmented": true,
+        "context": "Dialogue context: TRAVIS: Excellent! MATT: That's 12 points of damage and he's currently restrained by the hook through his chest. LAURA: Impaled? Oh!",
+        "question": "TRAVIS: Perfect! With my second attack as he's screaming out I reach inside, grab his lower jaw and pull him straight down.",
+        "response": "act on game-state"
+      },
+      {
+        "augmented": true,
+        "context": "Dialogue context: SAM: Keyleth starts eating him. TRAVIS: (laughing) 24. MATT: (laughs) Go ahead and roll damage on this.",
+        "question": "LAURA: Oh, sick.",
+        "response": "acknowledge"
+      },
+      {
+        "augmented": true,
+        "context": "Dialogue context: TRAVIS: (laughing) 24. MATT: (laughs) Go ahead and roll damage on this. LAURA: Oh, sick.",
+        "question": "TRAVIS: With a 12?",
+        "response": "question game-state"
+      },
+      {
+        "augmented": true,
+        "context": "Dialogue context: LAURA: Oh, sick. TRAVIS: With a 12? MATT: For flavor, roll a 12. Why not? You're pulling his jaw.",
+        "question": "TRAVIS: Excellent! (laughing)",
+        "response": "acknowledge"
+      },
+      {
+        "context": "Dialogue context: LIAM: Well, that's that then. ORION: You'll have a friend in us, that's for sure. LAURA: Let's find the frigging vault!",
+        "question": "TALIESIN: Let's go upstairs.",
+        "response": "propose intention or action"
+      },
+      {
+        "context": "Dialogue context: LIAM: I don't know. ORION: She's Allura's friend, right? TRAVIS: We're going to throw down, this is gonna be Marvel versus DC in this bitch.",
+        "question": "LAURA: She's Allura's friend, she's good!",
+        "response": "assert game-state"
+      },
+      {
+        "context": "Dialogue context: MATT: \"I have no idea. They're either in the vault or they're in the armory.\" SAM: Vault or the armory? Those are places that we can go? LAURA: There's a vault?",
+        "question": "TALIESIN: Are there stairs in the room that we're in?",
+        "response": "question game-state"
+      },
+      {
+        "context": "Dialogue context: MATT: --stares at the dwarf that is currently hooked onto the wall. (angry yell) And with a yell, slams it right into his face, causing his head to explode against the back of the wall. Slams it again and again and again, and is just making hamburger of his entire body. The arm sloughs off and she's just going nuts. You can see her bludgeoning over and over again with a spray of gore on her. And there's this look of anger, frustration-- LAURA: She's raging. MATT: --and a sick sense of joy a little bit in her eyes in how she's just tearing this dwarf apart. Eventually, after this frenzy, you're all taken aback, and she takes a moment. (heavy breathing) There is very little left recognizable of what once was a duergar.",
+        "question": "SAM: I notice a bulge in Grog's pants. (all laugh)",
+        "response": "out-of-gameplay"
+      }
+    ],
+    "signature": {
+      "instructions": "Given the context for a Dungeons & Dragons game turn and the game turn itself, classify the turn.",
+      "fields": [
+        {
+          "prefix": "Context:",
+          "description": "The three previous game turns which describe a player's action or their dialogue."
+        },
+        {
+          "prefix": "Question:",
+          "description": "The current turn taken by a player, which can include a description of an action or a piece of dialogue."
+        },
+        {
+          "prefix": "Response:",
+          "description": "${response}"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "metadata": {
+    "dependency_versions": {
+      "python": "3.12",
+      "dspy": "3.2.1",
+      "cloudpickle": "3.1"
+    }
+  }
+}
