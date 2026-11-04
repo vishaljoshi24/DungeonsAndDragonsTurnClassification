@@ -1,26 +1,27 @@
 import dspy
 from typing import Literal
 
-TurnCategory = Literal[
-    'Gameplay Mechanic',
-    'Out-Of-Game Conversation',
-    'Worldbuilding',
-    'Strategising',
+CATEGORIES = Literal[
+    "question game-state",
+    "assert game-state",
+    "acknowledge",
+    "probe intention",
+    "propose intention or action",
+    "interact with resource",
+    "act on game-state",
+    "argue",
+    "out-of-gameplay",
 ]
+
+TurnCategory = CATEGORIES
 
 
 class TurnClassifier(dspy.Signature):
-    """Given the context for a Dungeons & Dragons game turn and the turn itself, classify the turn."""
+    """Given the context for a Dungeons & Dragons game turn and the game turn itself, classify the turn."""
 
-    context: str = dspy.InputField(
-        desc="The three previous game turns which describe a player's action or their dialogue."
-    )
-    question: str = dspy.InputField(
-        desc="The current turn taken by a player, which can include a description of an action or dialogue."
-    )
-    response: TurnCategory = dspy.OutputField()
-
-
+    context: str = dspy.InputField(desc="The three previous game turns which describe a player's action or their dialogue.")
+    question: str = dspy.InputField(desc="The current turn taken by a player, which can include a description of an action or a piece of dialogue.")
+    response: CATEGORIES = dspy.OutputField()
 class PlayerInstruction(dspy.Signature):
     """Generate an instruction for a D&D player agent from a turn category."""
 

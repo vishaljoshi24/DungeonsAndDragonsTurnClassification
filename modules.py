@@ -7,7 +7,7 @@ from typing import Any
 import dspy
 import pandas as pd
 
-from signatures import Assess, ChatbotSignature, TurnClassifier
+from signatures import Assess, CATEGORIES, ChatbotSignature, TurnClassifier
 
 
 DEFAULT_MODEL = "ollama_chat/qwen3:8b"
@@ -25,7 +25,7 @@ def configure_lm(
 ) -> dspy.LM:
     """Configure DSPy for the local Ollama-backed model used in the notebooks."""
 
-    lm = dspy.LM(model, api_base=api_base, api_key=api_key, max_tokens=max_tokens)
+    lm = dspy.LM(model, api_base=api_base, api_key=api_key, max_tokens=max_tokens, cache=cache)
     dspy.configure(lm=lm)
     return lm
 
@@ -58,68 +58,69 @@ class ClassifyTurns(dspy.Module):
 
 
 class PromptTool:
-    """Retrieve behaviour instructions using the optimized turn classifier."""
+    """Classify turns and retrieve matching behaviour instructions."""
 
-    def __init__(
-        self,
-        prompts_path: str | Path = DEFAULT_INSTRUCTIONS_PATH,
-        classifier: ClassifyTurns | None = None,
-    ):
+    def __init__(self, prompts_path=DEFAULT_INSTRUCTIONS_PATH, classifier=None):
         self.prompts = self._load_prompts(prompts_path)
         self.classify = classifier if classifier is not None else ClassifyTurns()
 
     @staticmethod
-    def _load_prompts(prompts_path: str | Path) -> dict[str, str]:
+    def _load_prompts(prompts_path) -> dict[str, str]:
         df = pd.read_excel(prompts_path)
-        df = df.drop(columns=[column for column in df.columns if str(column).startswith("Unnamed")])
-        df = df.drop_duplicates(subset=[df.columns[0]], inplace=False)
+        df = df.drop(columns=[
+            column for column in df.columns
+            if str(column).startswith("Unnamed")
+        ])
+        if not {"classes", "instructions"}.issubset(df.columns):
+            raise ValueError(
+                f"Expected 'classes' and 'instructions' columns; found {list(df.columns)}"
+            )
 
-        prompts: list[str] = []
-        for classes, instructions in df.values:
-            examples = dspy.Example(classes=classes, instructions=instructions).with_inputs("classes", "instructions")
-            prompts.append(examples)
+        prompts = {}
+        for _, row in df.iterrows():
+            label, instructions = row["classes"], row["instructions"]
+            if pd.isna(label) or pd.isna(instructions):
+                continue
+            label = str(label).strip()
+            instructions = str(instructions).strip()
+            if label:
+                prompts.setdefault(label, instructions)
         return prompts
 
-    def classify_input(
-        self,
-        context: str,
-        query: str,
-        user_id: str = "default_user",
-    ) -> str:
-        """Classify a player's input into a D&D behaviour category."""
-
-        prompt_class = self.classify(context=context, question=query).response
-        return prompt_class
+    def classify_input(self, context, query, user_id="default_user") -> str:
+        prediction = self.classify(context=context, question=query)
+        label = str(getattr(prediction, "response", "")).strip()
+        if label not in CATEGORIES.__args__:
+            raise ValueError(
+                f"Invalid classifier category {label!r}; expected one of "
+                f"{CATEGORIES.__args__}"
+            )
+        return label
 
     def search_prompts(
-        self,
-        prompt_class: str,
-        context: str,
-        query: str,
-        user_id: str = "default_user",
-        limit: int = 4,
+        self, prompt_class, context, query, user_id="default_user", limit=4
     ) -> str:
-        """Find the instruction text for a classified player behaviour."""
-        prompt_text = "Update instructions with the following prompt:\n"
-        for i in range(len(self.prompts)):
-            if prompt_class == self.prompts[i]['classes']:
-                prompt_text += self.prompts[i]['instructions']
-                return prompt_text
-            if not prompt_class:
-                return "No relevant prompt found."
+        label = str(prompt_class).strip()
+        if label not in CATEGORIES.__args__:
+            raise ValueError(f"Invalid category for prompt lookup: {label!r}")
+        if label not in self.prompts:
+            raise KeyError(f"No spreadsheet instructions for category {label!r}")
+        return self.prompts[label]
 
     def update_prompt(
-        self,
-        context: str,
-        query: str,
-        instruct_prompt: str,
-        prompt_text: str,
-        new_prompt: str = "",
+        self, context, query, instruct_prompt, prompt_text, new_prompt=""
     ) -> str:
-        """Append retrieved instructions to the current agent prompt."""
-
-        updated_prompt = instruct_prompt + new_prompt
-        return f"Updated prompt with new instructions: {updated_prompt}"
+        additions = [
+            value.strip() for value in (prompt_text, new_prompt)
+            if value and value.strip()
+        ]
+        if not additions:
+            raise ValueError("No behaviour instructions supplied.")
+        return (
+            f"{instruct_prompt.rstrip()}\n\n"
+            "Behaviour instructions for this turn:\n"
+            + "\n\n".join(additions)
+        )
 
 class BaselineChatbot(dspy.Module):
     """A D&D player agent with behaviour instructions."""
@@ -137,29 +138,42 @@ class BaselineChatbot(dspy.Module):
         )
 
 class InstructedChatbot(dspy.Module):
-    """A ReAct D&D player agent which uses tools to update its prompt instructions."""
+    """D&D player agent with deterministic tool orchestration."""
 
-    def __init__(self, prompt_tool: PromptTool | None = None, max_iters: int = 6):
+    def __init__(self, prompt_tool=None, max_iters=6):
         super().__init__()
-        self.prompt_tools = (
-            prompt_tool if prompt_tool is not None else PromptTool()
-        )
-        self.react = dspy.ReAct(
-            signature=ChatbotSignature,
-            tools=[self.prompt_tools.classify_input,
-                  self.prompt_tools.search_prompts,
-                  self.prompt_tools.update_prompt],
-            max_iters=max_iters,
-        )
+        # Keep max_iters for compatibility with existing call sites.
+        self.prompt_tools = prompt_tool if prompt_tool is not None else PromptTool()
+        self.response_generator = dspy.Predict(signature=ChatbotSignature)
 
-    def forward(self, instruct_prompt: str, scenario_context: str, user_input: str):
-        """Process another agent's input with prompt aware reasoning"""
-        return self.react(
+    def forward(self, instruct_prompt, scenario_context, user_input):
+        context = _as_text(scenario_context)
+        query = _as_text(user_input)
+
+        # These steps always run in this order; ReAct cannot skip them.
+        category = self.prompt_tools.classify_input(context=context, query=query)
+        category = str(category).strip()
+        allowed_categories = CATEGORIES.__args__
+        if category not in allowed_categories:
+            raise ValueError(
+                f"Invalid classifier category {category!r}; expected one of "
+                f"{allowed_categories}"
+            )
+
+        instructions = self.prompt_tools.search_prompts(
+            prompt_class=category, context=context, query=query
+        )
+        updated_prompt = self.prompt_tools.update_prompt(
+            context=context,
+            query=query,
             instruct_prompt=_as_text(instruct_prompt),
-            scenario_context=_as_text(scenario_context),
-            user_input=user_input,
+            prompt_text=instructions,
         )
-
+        return self.response_generator(
+            instruct_prompt=updated_prompt,
+            scenario_context=context,
+            user_input=query,
+        )
 
 @dataclass
 class AgentProfile:
